@@ -4,7 +4,7 @@ import PostMessage from "../models/postMessage.js";
 export const getPosts = async (req, res) => {
   const { page } = req.query;
   try {
-    const LIMIT = 4;
+    const LIMIT = 8;
     const startIndex = (Number(page) - 1) * LIMIT; //Get Starting Index of Every Page
     const total = await PostMessage.countDocuments({});
     const posts = await PostMessage.find()
@@ -114,6 +114,20 @@ export const likePost = async (req, res) => {
   }
 
   const updatedPost = await PostMessage.findByIdAndUpdate(_id, post, {
+    new: true,
+  });
+
+  res.json(updatedPost);
+};
+
+export const commentPost = async (req, res) => {
+  const { id } = req.params;
+  const { value } = req.body;
+
+  const post = await PostMessage.findById(id);
+  post.comments.push(value);
+
+  const updatedPost = await PostMessage.findByIdAndUpdate(id, post, {
     new: true,
   });
 
